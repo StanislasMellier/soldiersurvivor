@@ -8,7 +8,8 @@ export default function createLightsGroup() {
 
     const directionalLight = new DirectionalLight(0xffffff, 0.5)
     lightGroup.add(directionalLight)
-    directionalLight.position.set(1, 1, 1)
+    directionalLight.position.set(10, 10, 10)
+
     directionalLight.castShadow = true
     return lightGroup
 }

@@ -1,8 +1,11 @@
 import * as CANNON from 'cannon-es'
 import * as THREE from 'three'
+import { assets } from './loadAssets'
 
-const GROUND_GRID_SIZE = 50
+const GROUND_GRID_SIZE = 5
 const CHUNCK_SIZE = 25
+const MAX_ASSETS_PER_TILE = 3
+
 let groundTileGroup
 function createGroud() {
 
@@ -17,15 +20,17 @@ function createGroud() {
     GroundTileGeometry.rotateX(-Math.PI / 2)
     const tileMaterial = new THREE.MeshStandardMaterial({ color: 'lightgreen' })
 
-
     let sizeDiv2 = Math.floor(GROUND_GRID_SIZE / 2)
     for (let x = -sizeDiv2; x < GROUND_GRID_SIZE - sizeDiv2; x++) {
         for (let y = -sizeDiv2; y < GROUND_GRID_SIZE - sizeDiv2; y++) {
+
             const tile = new THREE.Mesh(GroundTileGeometry, tileMaterial)
+
             tile.receiveShadow = true
             tile.castShadow = true
 
-            tile.chunckCoord = new THREE.Vector2(x, y)
+            GenerateEnvironmentOnTile(tile)
+
             tile.position.x = x * CHUNCK_SIZE
             tile.position.z = y * CHUNCK_SIZE
             groundTileGroup.add(tile)
@@ -34,7 +39,20 @@ function createGroud() {
 
     return { groundBody, groundTileGroup }
 }
+let assetsTemp = []
+function GenerateEnvironmentOnTile(tile) {
 
+    const numberOfAssets = Math.floor(Math.random() * MAX_ASSETS_PER_TILE)
+
+
+    for (let i = 0; i < numberOfAssets; i++) {
+        const asset = assets[Math.floor(Math.random() * assets.length)].scene.clone()
+
+        asset.position.x = Math.random() * CHUNCK_SIZE / 2
+        asset.position.z = Math.random() * CHUNCK_SIZE / 2
+        tile.add(asset)
+    }
+}
 function updateGround(playerDirection) {
     groundTileGroup.children.forEach(tile => {
         tile.position.x += playerDirection.x
